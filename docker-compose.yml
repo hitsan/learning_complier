@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+    low:
+      image: hitsan/ctest:1.1
+      ports:
+        - 8080:80
+      volumes:
+        - ../low_layer:/home/low_layer
+      tty: true
