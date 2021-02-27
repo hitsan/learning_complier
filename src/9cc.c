@@ -206,7 +206,7 @@ Token *tokenize(){
             continue;
         }
 
-        if(*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')'){
+        if(strchr("+-*/()", *p)){
             cur = new_token(TK_RESERVED, cur, p++);
             continue;
         }
@@ -218,7 +218,7 @@ Token *tokenize(){
             continue;
         }
 
-        error_at(p, "Can not tokenize!");
+        error_at(p, "Invalid token!");
     }
 
     new_token(TK_EOF, cur, p);
