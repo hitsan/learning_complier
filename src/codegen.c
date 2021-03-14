@@ -8,7 +8,7 @@ void gen_lval(Node *node){
 
     printf("  mov rax, rbp\n");
     printf("  sub rax, %d\n", node->offset);
-    printf("  mov rax\n");
+    printf("  push rax\n");
 }
 
 void gen(Node *node){

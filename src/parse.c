@@ -6,8 +6,6 @@
 #include <ctype.h>
 #include "9cc.h"
 
-LVar *locals;
-
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs){
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -86,7 +84,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len){
 
 Token *consume_ident(){
     if(token->kind != TK_IDENT){
-        // error(token->str, "expected indet");
         return NULL;
     }
     token = token->next;
@@ -239,7 +236,6 @@ Token *tokenize(){
     Token *cur = &head;
 
     while(*p){
-        printf("%c", *p);
         if(isspace(*p)){
             p++;
             continue;
