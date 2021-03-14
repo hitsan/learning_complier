@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include "9cc.h"
 
-Node *code[100];
+LVar *locals;
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs){
     Node *node = calloc(1, sizeof(Node));
@@ -84,6 +84,15 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len){
     return tok;
 }
 
+Token *consume_ident(){
+    if(token->kind != TK_IDENT){
+        // error(token->str, "expected indet");
+        return NULL;
+    }
+    token = token->next;
+    return token;
+}
+
 bool startswith(char *p, char *q){
     return memcmp(p, q, strlen(q)) == 0;
 }
@@ -99,7 +108,19 @@ Node *primary(){
     if(tok){
         Node *node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
-        node->offset = (tok->str[0] - 'a' + 1) * 8;
+
+        LVar *lvar = find_lvar(tok);
+        if(lvar){
+            node->offset = lvar->offset;
+        }else{
+            lvar = calloc(1, sizeof(LVar));
+            lvar->next = locals;
+            lvar->name = tok->str;
+            lvar->len = tok->len;
+            lvar->offset = locals->offset + 8;
+            node->offset = lvar->offset;
+            locals = lvar;
+        }
         return node;
     }
 
@@ -202,13 +223,23 @@ void program(){
     code[i] = NULL;
 }
 
-Token *tokenize(char* user_input){
+LVar *find_lvar(Token *tok){
+    for(LVar *var = locals; var; var = var->next){
+        if(var->len == tok->len && !memcmp(tok->str, var->name, var->len)){
+            return var;
+        }
+    }
+    return NULL;
+}
+
+Token *tokenize(){
     char *p = user_input;
     Token head;
     head.next = NULL;
     Token *cur = &head;
 
     while(*p){
+        printf("%c", *p);
         if(isspace(*p)){
             p++;
             continue;
@@ -221,7 +252,7 @@ Token *tokenize(char* user_input){
             continue;
         }
 
-        if(strchr("+-*/()<>", *p)){
+        if(strchr("+-*/()<>=;", *p)){
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }

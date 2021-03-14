@@ -23,6 +23,7 @@ typedef enum{
 
 typedef struct Node Node;
 typedef struct Token Token;
+typedef struct LVar LVar;
 
 struct Token{
     TokenKind kind;
@@ -40,8 +41,17 @@ struct Node{
     int offset;
 };
 
-Token *token;
-char *user_input;
+struct LVar{
+  LVar *next;
+  char *name; 
+  int len;    
+  int offset; 
+};
+
+extern Token *token;
+extern char *user_input;
+extern Node *code[100];
+extern LVar *locals;
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
@@ -59,5 +69,9 @@ Node *equality();
 Node *relational();
 Node *add();
 Node *assign();
-Token *tokenize(char* user_input);
+void program();
+LVar *find_lvar(Token *tok);
+Token *tokenize();
+Token *consume_ident();
 void gen(Node *node);
+void gen_lval(Node *node);
