@@ -86,8 +86,9 @@ Token *consume_ident(){
     if(token->kind != TK_IDENT){
         return NULL;
     }
+    Token* tok = token;
     token = token->next;
-    return token;
+    return tok;
 }
 
 bool startswith(char *p, char *q){
@@ -229,6 +230,13 @@ LVar *find_lvar(Token *tok){
     return NULL;
 }
 
+int is_alnum(char c){
+    return (c >= 'a' && c <= 'z') ||
+           (c >= 'A' && c <= 'Z') ||
+           (c >= '0' && c <= '9') ||
+           (c == '_');
+}
+
 Token *tokenize(){
     char *p = user_input;
     Token head;
@@ -262,8 +270,11 @@ Token *tokenize(){
         }
 
         if(*p >= 'a' && *p <= 'z'){
-            cur = new_token(TK_IDENT, cur, p++, 1);
-            // cur->len = 1;
+            char* s = p;
+            while(*p >= 'a' && *p <= 'z'){
+                p++;
+            }
+            cur = new_token(TK_IDENT, cur, s, p-s);
             continue;
         }
 
