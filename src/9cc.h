@@ -5,6 +5,9 @@ typedef enum{
     TK_IDENT,
     TK_NUM,
     TK_RETURN,
+    TK_IF,
+    TK_WHILE,
+    TK_FOR,
     TK_EOF,
 } TokenKind;
 
@@ -18,6 +21,8 @@ typedef enum{
     ND_LT,
     ND_LE,
     ND_NUM,
+    ND_IF,
+    ND_ELSE,
     ND_RETURN,
     ND_ASSIGN,
     ND_LVAR,

@@ -42,8 +42,12 @@ void error(char *fmt, ...){
 }
 
 bool consume(char *op){
-    if((token->kind != TK_RESERVED && token->kind != TK_RETURN )||
-        token->len != strlen(op) || 
+    if((token->kind != TK_RESERVED &&
+        token->kind != TK_RETURN   &&
+        token->kind != TK_IF       &&
+        token->kind != TK_WHILE    &&
+        token->kind != TK_FOR)     ||
+        token->len  != strlen(op)  || 
         memcmp(token->str, op, token->len)){
         return false;
     }
@@ -210,14 +214,36 @@ Node *expr(){
 Node *stmt(){
     Node *node;
 
-    if(consume("return")){
-        node = calloc(1, sizeof(Node));
-        node->kind = ND_RETURN;
-        node->lhs = expr();
+    // if(consume("if") && consume("(")){
+    //     expr();
+    //     stmt();
+
+    // }else if(consume("while") && consume("(")){
+        
+    // }else if(consume("for") && consume("(")){
+    if(consume("if") && consume("(")){
+        node = new_node(ND_IF, expr(), node);
+        expect(")");
+        node->rhs = stmt();
+        if(consume("else")){
+            node = new_node(ND_ELSE, node, stmt());
+        }
+    }else if(consume("while") && consume("(")){
+        node = new_node(ND_IF, expr(), node);
+        expect(")");
+        node->rhs = stmt();
+    }else if(consume("for") && consume("(")){
+        //1つ先のトークンを読む
+        node = new_node(ND_IF, expr(), node);
+        expect(")");
+        node->rhs = stmt();
+    }else if(consume("return")){
+        node = new_node(ND_RETURN, expr(), node);
+        expect(";");
     }else{
         node = expr();
+        expect(";");
     }
-    expect(";");
     return node;
 }
 
@@ -274,6 +300,30 @@ Token *tokenize(){
             char *q = p;
             cur->val = strtol(p, &p, 10);
             cur->len = p - q;
+            continue;
+        }
+
+        if(startswith(p, "if") && !is_alnum(p[2])){
+            cur = new_token(TK_IF, cur, p, 2);
+            p += 2;
+            continue;
+        }
+
+        if(startswith(p, "else") && !is_alnum(p[4])){
+            cur = new_token(TK_IF, cur, p, 4);
+            p += 4;
+            continue;
+        }
+
+        if(startswith(p, "while") && !is_alnum(p[5])){
+            cur = new_token(TK_WHILE, cur, p, 5);
+            p += 5;
+            continue;
+        }
+
+        if(startswith(p, "for") && !is_alnum(p[3])){
+            cur = new_token(TK_FOR, cur, p, 3);
+            p += 3;
             continue;
         }
 

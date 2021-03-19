@@ -20,6 +20,27 @@ void gen(Node *node){
         printf("  ret\n");
         return;
     }
+
+    // if(node->kind == ND_ELSE){
+    //     printf(".LelsseXXX:\n");
+    //     gen(node->lhs);
+    //     printf("  pop rax\n");
+    //     printf("  cmp rax, 0\n");
+    //     printf("  je  .LendXXX\n");
+    //     gen(node->rhs);
+    //     return;
+    // }
+
+    if(node->kind == ND_IF){
+        gen(node->lhs);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .LendXXX\n");
+        gen(node->rhs);
+        printf(".LendXXX:\n");
+        return;
+    }
+
     switch(node->kind){
         case ND_NUM:
             printf("  push %d\n", node->val);
