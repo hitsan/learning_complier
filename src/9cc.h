@@ -4,8 +4,8 @@ typedef enum{
     TK_RESERVED,
     TK_IDENT,
     TK_NUM,
-    TK_EOF,
     TK_RETURN,
+    TK_EOF,
 } TokenKind;
 
 typedef enum{
@@ -18,6 +18,7 @@ typedef enum{
     ND_LT,
     ND_LE,
     ND_NUM,
+    ND_RETURN,
     ND_ASSIGN,
     ND_LVAR,
 } NodeKind;

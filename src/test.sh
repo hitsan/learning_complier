@@ -47,5 +47,8 @@ assert 0 '1>=2;'
 assert 6 'aa=2+4;'
 assert 2 'a = 1; b = a + 1;'
 assert 4 "a = 2; b = 2; a + b;"
-assert 30 "foo = 10; bar = 20; foo + bar;"
+assert 30 "return 30;"
+assert 30 "foo = 10; bar = 20; return foo + bar;"
+assert 0 'return 1>=2;'
+
 echo OK

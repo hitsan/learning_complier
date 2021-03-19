@@ -42,7 +42,7 @@ void error(char *fmt, ...){
 }
 
 bool consume(char *op){
-    if(token->kind != TK_RESERVED || 
+    if((token->kind != TK_RESERVED && token->kind != TK_RETURN )||
         token->len != strlen(op) || 
         memcmp(token->str, op, token->len)){
         return false;
@@ -208,7 +208,15 @@ Node *expr(){
 }
 
 Node *stmt(){
-    Node *node = expr();
+    Node *node;
+
+    if(consume("return")){
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_RETURN;
+        node->lhs = expr();
+    }else{
+        node = expr();
+    }
     expect(";");
     return node;
 }
@@ -266,6 +274,12 @@ Token *tokenize(){
             char *q = p;
             cur->val = strtol(p, &p, 10);
             cur->len = p - q;
+            continue;
+        }
+
+        if (startswith(p, "return") == 1 && !is_alnum(p[6])) {
+            cur = new_token(TK_RETURN, cur, p, 6);
+            p += 6;
             continue;
         }
 
