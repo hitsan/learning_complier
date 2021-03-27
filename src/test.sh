@@ -58,8 +58,8 @@ assert() {
 assert 1 "if(1) return 2>=1; else return 1>=1;"
 assert 0 "if(0) return 2>=1; else return 0;"
 assert 0 "if(0) return 2>=1; else return 0>2;"
-# assert 1 "if(1) return 1; else if(0) return 2; else return 3;"
-# assert 2 "if(0) return 1; else if(1) return 2; else return 3;"
-# assert 3 "if(0) return 1; else if(0) return 2; else return 3;"
+assert 1 "if(1) return 1; else if(0) return 2; else return 3;"
+assert 2 "if(0) return 1; else if(1) return 2; else return 3;"
+assert 3 "if(0) return 1; else if(0) return 2; else return 3;"
 
 echo OK
