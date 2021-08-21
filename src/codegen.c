@@ -1,6 +1,9 @@
 #include<stdio.h>
 #include"9cc.h"
 
+static int l_num = 0;
+static char label[256];
+
 void gen_lval(Node *node){
     if(node->kind != ND_LVAR){
         error("error");
@@ -11,15 +14,9 @@ void gen_lval(Node *node){
     printf("  push rax\n");
 }
 
-void gen(Node *node){
-    if (node->kind == ND_RETURN) {
-        gen(node->lhs);
-        printf("  pop rax\n");
-        printf("  mov rsp, rbp\n");
-        printf("  pop rbp\n");
-        printf("  ret\n");
-        return;
-    }
+void increment_label(){
+    sprintf(label, ".Lend%05d", l_num++);
+}
 
     if(node->kind == ND_ELSE){
         printf(".LelsseXXX:\n");
@@ -27,17 +24,41 @@ void gen(Node *node){
         return;
     }
 
-    if(node->kind == ND_IF){
-        gen(node->lhs);
-        printf("  pop rax\n");
-        printf("  cmp rax, 0\n");
-        printf("  je  .LendXXX\n");
-        gen(node->rhs);
-        printf(".LendXXX:\n");
-        return;
-    }
+        // if(node->kind == ND_ELSE){
+        //     printf(".LelsseXXX:\n");
+        //     gen(node->lhs);
+        //     printf("  pop rax\n");
+        //     printf("  cmp rax, 0\n");
+        //     printf("  je  .LendXXX\n");
+        //     gen(node->rhs);
+        //     return;
+        // }
 
     switch(node->kind){
+        case ND_RETURN:
+            gen(node->lhs);
+            printf("  pop rax\n");
+            printf("  mov rsp, rbp\n");
+            printf("  pop rbp\n");
+            printf("  ret\n");
+            return;
+        case ND_IF:
+            increment_label();
+            gen(node->lhs);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  %s\n", label);
+            gen(node->rhs);
+            printf("%s:\n", label);
+            return;
+        case ND_ELSE:
+            printf(".LelsseXXX:\n");
+            gen(node->lhs);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  .LendXXX\n");
+            gen(node->rhs);
+            return;
         case ND_NUM:
             printf("  push %d\n", node->val);
             return;
