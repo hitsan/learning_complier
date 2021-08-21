@@ -21,15 +21,11 @@ void gen(Node *node){
         return;
     }
 
-    // if(node->kind == ND_ELSE){
-    //     printf(".LelsseXXX:\n");
-    //     gen(node->lhs);
-    //     printf("  pop rax\n");
-    //     printf("  cmp rax, 0\n");
-    //     printf("  je  .LendXXX\n");
-    //     gen(node->rhs);
-    //     return;
-    // }
+    if(node->kind == ND_ELSE){
+        printf(".LelsseXXX:\n");
+        gen(node->rhs);
+        return;
+    }
 
     if(node->kind == ND_IF){
         gen(node->lhs);
